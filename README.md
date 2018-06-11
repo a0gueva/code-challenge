@@ -20,6 +20,24 @@ Take a look at how the code is structured.
 This application uses firebase from google to hold he data that will be used on this application.  You can find the
 data models here https://console.firebase.google.com/project/pdp-builder/database/pdp-builder/data/
 
+Samples on how to call the data enpoints with jQuery Ajax API
+
+
+### call the product data endpoint 
+```
+$.getJSON("https://pdp-builder.firebaseio.com/Products/005012499.json").then((res) => {
+    // do something with the response
+});
+```
+
+
+### call the swatches data endpoint        
+```
+$.getJSON("https://pdp-builder.firebaseio.com/swatches/00501.json").then((res) => {
+    // do something with the response
+});
+```
+
 Note: The application starts out showing a default product.  Clicking on a different swatch refreshes the data on the page
 but does not refresh the data.  You will need to create the click handlers to accomodate that functionality.  You must
 also crate the logic to refresh the different parts of the product page as described in the Instructions below.
