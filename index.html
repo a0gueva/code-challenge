@@ -1,0 +1,248 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.js"></script>
+</head>
+<style>
+    @font-face {
+        font-family: lsco-icon;
+        src: url("https://d22n5ti4du62e6.cloudfront.net/00000apstatic/fonts/lvco_update/LSCO-Icon-Font.woff");
+    }
+
+    .row {
+        margin: 0;
+    }
+
+    .logo {
+        text-align: center;
+    }
+
+    .icon::before {
+        display: block;
+        position: relative;
+        top: -14px;
+        content: "\e93a";
+        font-family: "lsco-icon";
+        font-size: 41px;
+        color: #c41230;
+        z-index: 1;
+    }
+
+    ul {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+        grid-gap: 10px;
+        padding: 10px;
+        text-align: center;
+    }
+
+    li {
+        list-style-type: none;
+        background-color: #fff;
+        border-radius: 3px;
+        font-size: 14px;
+        max-height: 38px;
+        max-width: 60px;
+    }
+
+    li img,
+    .pdp-hero img {
+        width: 100%;
+        padding: 2px;
+    }
+
+    .pdp-hero {
+        text-align: center;
+        width: 100%;
+        min-width: 280px;
+        min-height: 280px;
+        padding: 10px;
+    }
+
+    .pdp-name,
+    .pdp-decription {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        color: #5a5a5a;
+        margin: 10px 0 10px 0;
+    }
+
+    .pdp-name {
+        font-weight: 600;
+    }
+
+    .pdp-description {
+        max-height: 80px;
+        overflow: hidden;
+    }
+
+    .swatch-color-name {
+        text-indent: 10px;
+        margin: 10px 0 10px 0;
+    }
+
+    .active-true {
+        border: solid 2px #a02121;
+    }
+
+    .form-control-sel {
+        font-weight: 500;
+        width: 100%;
+    }
+
+    .form-control-sel::after {
+        content: "\e90b";
+        font-family: 'lsco-icon';
+        font-size: 16px;
+        color: #666666;
+        position: absolute;
+        line-height: 32px;
+        right: 25px;
+        top: 1px;
+        z-index: 5;
+        pointer-events: none;
+        padding-left: 5px;
+    }
+
+    .pdp-price {
+        font-size: 20px !important;
+        font-family: Arial;
+        font-weight: 500;
+        line-height: 22px !important;
+        text-decoration: none !important;
+        color: #a02121 !important;
+        margin: 15px 0 10px 0;
+    }
+</style>
+<script id="pdp-header" type="text/x-handlebars-template">
+    <div class="pdp-header js-pdp-header">
+        <div class="row">
+            <div class="col-xs-4"></div>
+            <div class="col-xs-4 logo">
+                <span class="icon"></span>
+            </div>
+            <div class="col-xs-4"></div>
+        </div>
+    </div>
+</script>
+<script id="pdp-main" type="text/x-handlebars-template">
+    <div class="pdp-main js-pdp-main">
+        <div class="row">
+            <div class="col-xs-12 pdp-hero">
+                <img src="https://lsco.scene7.com/is/image/lsco/Levis/clothing/{{this.code}}-front-pdp.jpg?$regular_desktop$">
+            </div>
+        </div>
+        <div class="row pdp-name">
+            <span class="col-xs-12">{{this.name}}</span>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 pdp-description">{{{this.description}}}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 pdp-price">{{{this.price.formattedValue}}}</div>
+        </div>
+    </div>
+</script>
+<script id="pdp-buy-options" type="text/x-handlebars-template">
+    <div class="pdp-swatches js-pdp-swatches">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="swatch-color-name js-swatch-color-name">
+                    <strong>Color: {{this.color}}</strong>
+                </div>
+                <ul>
+                    {{#each this.swatches}}
+                    <li class="js-pdp-swatch">
+                        <div class="active-{{this.active}}">
+                            <img src="{{this.imageUrl}}" />
+                        </div>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+    </div>
+</script>
+<script id="pdp-sizes" type="text/x-handlebars-template">
+    <div class="pdp-sizes js-pdp-sizes">
+        <div class="row">
+            <div class="col-xs-8">
+                <label class="form-control-sel">
+                    <select class="form-control" id="sel1">
+                        <option>select a size</option>
+                        {{#each this.variantOptions}}
+                        <option>{{this.displaySizeDescription}}</option>
+                        {{/each}}
+                    </select>
+                </label>
+            </div>
+        </div>
+    </div>
+</script>
+<script>
+    $(function () {
+
+        // Grab the templates html from scripts
+        var headerTemplate = $("#pdp-header").html();
+        var mainTemplate = $("#pdp-main").html();
+        var swatchesTemplate = $("#pdp-buy-options").html();
+        var sizesTemplate = $("#pdp-sizes").html();
+
+        // Compile the templates
+        var pdpHeader = Handlebars.compile(headerTemplate);
+        var pdpMain = Handlebars.compile(mainTemplate);
+        var pdpSwatches = Handlebars.compile(swatchesTemplate);
+        var pdpSizes = Handlebars.compile(sizesTemplate);
+
+        $.getJSON("https://pdp-builder.firebaseio.com/Products/005012499.json").then((res) => {
+            console.log("RES :: ", res);
+            var compiledMain = pdpMain(res);
+            var compileSizes = pdpSizes(res);
+            // Add the compiled html to the page
+            $('.js-product-main').html(compiledMain);
+            $('.js-product-sizes').append(compileSizes);
+        });
+
+        $.getJSON("https://pdp-builder.firebaseio.com/swatches/00501.json").then((res) => {
+            var swatches = res;
+            var color = "";
+            swatches.forEach((el) => {
+                if (el.code === '005012499') {
+                    el.active = true;
+                    color = el.colorName;
+                }
+            });
+            console.log("SWATCHES :: ", swatches);
+            var compiled = pdpSwatches({
+                swatches: swatches,
+                color: color
+            });
+            // Add the compiled html to the page
+            $('.js-product-swatches').append(compiled);
+            $('.js-pdp-swatch').on("click", processSwatchClick);
+        });
+
+        var compiledHeader = pdpHeader();
+        // Add the compiled html to the page
+        $('.js-product-header').html(compiledHeader);
+
+        function processSwatchClick(ev) {}
+
+    });
+</script>
+
+<body>
+    <header class="js-product-header"></header>
+    <section class="js-product-main"></section>
+    <hr>
+    <section class="js-product-buy-options">
+        <section class="js-product-sizes"></section>
+        <section class="js-product-swatches"></section>
+    </section>
+    <footer></footer>
+</body>
+
+</html>
